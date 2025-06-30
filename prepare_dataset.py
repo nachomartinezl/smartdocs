@@ -13,10 +13,11 @@ from collections import defaultdict
 from app.services.vector_service import classify   # your earlier code
 from app.services.document_ingestor import ingest  # gives list[dict]
 
-ROOT_RAW   = Path("raw_docs")
-ROOT_OUT   = Path("dataset")
-TRAIN_PCT  = 0.8
-REVIEW_DIR = ROOT_RAW / "_review"
+ROOT_RAW    = Path("raw_docs")
+ROOT_OUT    = Path("dataset")
+TRAIN_PCT   = 0.8
+MAX_FILES   = 1000
+REVIEW_DIR  = ROOT_RAW / "_review"
 
 random.seed(42)
 REVIEW_DIR.mkdir(exist_ok=True)
@@ -30,11 +31,11 @@ async def auto_label(file_path: Path) -> str | None:
 
 def ingest_dummy(fp: Path):
     "Thin sync wrapper around async ingest() for CLI use."
-    import asyncio, io
+    import io
     from fastapi import UploadFile
     data = fp.read_bytes()
     up   = UploadFile(filename=fp.name, file=io.BytesIO(data))
-    up.content_type = ("application/pdf" if fp.suffix.lower()==".pdf"
+    up.content_type = ("application/pdf" if fp.suffix.lower() == ".pdf"
                        else "image/" + fp.suffix.strip("."))
     return asyncio.run(ingest(up))
 
@@ -42,13 +43,11 @@ async def main():
     files_by_label = defaultdict(list)
 
     for f in ROOT_RAW.rglob("*.*"):
-        if f.parent.name == "_review":  # skip review dir
+        if f.parent.name == "_review" or f.is_dir():
             continue
-        if f.is_dir():
-            continue
+
         label = f.parent.name.lower()
 
-        # auto-label unknowns
         if label == "unknown":
             label = await auto_label(f) or "review"
             if label == "review":
@@ -57,7 +56,16 @@ async def main():
 
         files_by_label[label].append(f)
 
-    # split & copy
+    # ⚠️ Limit to MAX_FILES total, preserving label structure
+    all_files = [(label, fp) for label, files in files_by_label.items() for fp in files]
+    random.shuffle(all_files)
+    all_files = all_files[:MAX_FILES]
+
+    files_by_label = defaultdict(list)
+    for label, fp in all_files:
+        files_by_label[label].append(fp)
+
+    # Organize into train/test and build JSONL
     out_records = []
     for label, files in files_by_label.items():
         random.shuffle(files)
@@ -79,7 +87,6 @@ async def main():
                     "label": label
                 })
 
-    # dump jsonl
     with open(ROOT_OUT / "examples.jsonl", "w", encoding="utf-8") as fh:
         for rec in out_records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
