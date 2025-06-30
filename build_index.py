@@ -15,9 +15,7 @@ CONCURRENCY = int(os.getenv("OCR_CONCURRENCY", "32"))
 SEM         = Semaphore(CONCURRENCY)
 BATCH_SIZE  = 1000
 
-# 🧠 Hash-based unique ID
-def make_id(fp: pathlib.Path) -> str:
-    return hashlib.sha256(fp.read_bytes()).hexdigest()[:16]
+# ---------- helper utilities -----------------------------------------------
 
 def mime_from_path(fp: pathlib.Path) -> str:
     ext = fp.suffix.lower()
@@ -46,67 +44,37 @@ async def extract_text(fp: pathlib.Path) -> str:
         print(f"❌ OCR failed on {fp.name}: {e}")
         return ""
 
-async def to_example(fp: pathlib.Path) -> dict | None:
+# ---------- main routine ----------------------------------------------------
+
+CONCURRENCY = int(os.getenv("OCR_CONCURRENCY", "32"))
+SEM = Semaphore(CONCURRENCY)
+
+async def to_example(rec: dict) -> dict | None:
+    """Return embedding-ready record or None (if not in train)."""
+    path = rec.get("file_path", "")
+    if "/train/" not in path.replace("\\", "/"):
+        print(f"[SKIP] Not a training file: {path}")
+        return None
+
     async with SEM:
         text = await extract_text(fp)
         if not text.strip():
             return None
 
-        return {
-            "id": make_id(fp),
-            "file_path": str(fp),
-            "label": fp.parent.name.lower(),
-            "text": text
-        }
-
-def already_indexed_ids() -> set[str]:
-    if not EXAMPLES_JSONL.exists():
-        return set()
-    return {
-        json.loads(line)["id"]
-        for line in EXAMPLES_JSONL.read_text(encoding="utf-8").splitlines()
-    }
+        print(f"[DONE] Ready to index: {fp.name}")
+        return {"id": rec["id"], "text": text}
 
 async def main():
-    all_files = sorted([
-        f for f in RAW_DOCS_DIR.rglob("*.*")
-        if f.is_file() and f.parent.name != "_review"
-    ])
-    print(f"📂 Found {len(all_files)} total files")
+    print(f"📄 Reading: {EXAMPLES_JSONL}")
+    lines = EXAMPLES_JSONL.read_text(encoding="utf-8").splitlines()
+    print(f"🔎 Found {len(lines)} files to process...")
 
-    existing_ids = already_indexed_ids()
-    print(f"🧠 Skipping {len(existing_ids)} already-indexed files")
+    tasks = [to_example(json.loads(line)) for line in lines]
+    examples = [ex for ex in await gather(*tasks) if ex]
 
-    # Only keep new, uncached files
-    files_to_process = [f for f in all_files if make_id(f) not in existing_ids]
-    total_batches = (len(files_to_process) + BATCH_SIZE - 1) // BATCH_SIZE
-
-    for i in range(total_batches):
-        start = i * BATCH_SIZE
-        end   = start + BATCH_SIZE
-        batch = files_to_process[start:end]
-        if not batch:
-            break
-
-        print(f"\n🔥 Batch {i+1}/{total_batches} — {len(batch)} files")
-
-        tasks = [to_example(fp) for fp in batch]
-        examples = [ex for ex in await gather(*tasks) if ex]
-
-        if not examples:
-            print("⚠️ No new valid examples in this batch.")
-            continue
-
-        # 👉 Vector DB indexing
-        print(f"📚 Indexing {len(examples)} to vector DB...")
-        await index_examples(examples)
-
-        # 👉 Append to examples.jsonl
-        with EXAMPLES_JSONL.open("a", encoding="utf-8") as f:
-            for ex in examples:
-                f.write(json.dumps(ex, ensure_ascii=False) + "\n")
-
-        print(f"✅ Batch {i+1} done")
+    print(f"💾 Indexing {len(examples)} valid training examples...")
+    await index_examples(examples)
+    print(f"✅ Done. Indexed {len(examples)} examples (concurrency={CONCURRENCY})")
 
 if __name__ == "__main__":
     asyncio.run(main())
