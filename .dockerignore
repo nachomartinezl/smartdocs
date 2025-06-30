@@ -19,3 +19,10 @@ coverage.xml
 .mypy_cache
 .pytest_cache
 .hypothesis
+.ocr_cache
+__pycache__
+dataset/
+chroma_db
+raw_docs
+output
+smartdocs

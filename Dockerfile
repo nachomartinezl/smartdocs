@@ -1,45 +1,38 @@
 ###############################################################################
-# smartdocs – GPU image (CUDA 11.8, cuDNN 8, Paddle 3.1.0)
+# smartdocs – GPU image (CUDA 12.3 base, PaddlePaddle 3.1.0 for cu129)
 ###############################################################################
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS runtime
+FROM nvidia/cuda:12.9.1-cudnn-runtime-ubuntu22.04
 
-# ------------------------------------------------------------------------- #
-#  basic env                                                                
-# ------------------------------------------------------------------------- #
+ARG PADDLE_WHL=paddlepaddle-gpu==3.1.0  # cu129 build
+
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
-    # let Paddle manage VRAM politely (tweak if you have multiple GPUs)
     FLAGS_fraction_of_gpu_memory_to_use=0.8
 
 # ------------------------------------------------------------------------- #
-#  system deps                                                              
+#  system deps
 # ------------------------------------------------------------------------- #
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential git curl wget libgl1 poppler-utils tesseract-ocr \
+        build-essential git curl wget libgl1 libglib2.0-0 poppler-utils \
+        python3 python3-venv python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------------------- #
-#  Python venv                                                              
+#  venv & dependencies
 # ------------------------------------------------------------------------- #
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:${PATH}"
 
-# copy & install pinned requirements
 COPY requirements.txt .
+
 RUN pip install -U pip \
  && pip install --no-cache-dir ${PADDLE_WHL} \
+      -i https://www.paddlepaddle.org.cn/packages/stable/cu129/ \
+      --trusted-host www.paddlepaddle.org.cn \
  && pip install --no-cache-dir -r requirements.txt
 
 # ------------------------------------------------------------------------- #
-#  Pre-warm PaddleOCR weights (optional – shaves first-run latency)          
-# ------------------------------------------------------------------------- #
-RUN python - <<'PY'
-from paddleocr import PaddleOCR
-PaddleOCR(use_gpu=True, show_log=False)   # downloads models once
-PY
-
-# ------------------------------------------------------------------------- #
-#  application code                                                         
+#  application code
 # ------------------------------------------------------------------------- #
 WORKDIR /app
 COPY . /app
