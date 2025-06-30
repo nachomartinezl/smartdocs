@@ -6,21 +6,19 @@ to predict the document type from a given text.
 import joblib
 from pathlib import Path
 import numpy as np
+import asyncio # Import asyncio
 
 # Use relative imports for other services within the same 'app' package
 from . import vector_service
 
 # --- Configuration & Model Loading (on startup) ---
 # Build a robust, absolute path to the models directory
-# --- Configuration & Model Loading (on startup) ---
-# --- THE FIX IS HERE ---
 # Get the directory where this script ('classifier_service.py') is located
 SCRIPT_DIR = Path(__file__).resolve().parent 
 # Go UP one level from 'services' to 'app', then UP another level to the project root.
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 # Now build the correct path to the models directory from the project root
 MODELS_DIR = PROJECT_ROOT / "models"
-# --- END OF FIX ---
 SVC_MODEL_PATH = MODELS_DIR / "support_vector_machine_svc.joblib"
 ENCODER_PATH = MODELS_DIR / "label_encoder.joblib"
 
@@ -51,14 +49,14 @@ async def predict(text: str) -> tuple[str, float]:
     embedding = await vector_service.embed(text)
     embedding_array = np.array(embedding).reshape(1, -1) # Reshape for a single prediction
 
-    # 2. Get the integer prediction from the scikit-learn pipeline
-    prediction_encoded = CLASSIFIER.predict(embedding_array)
+    # 2. Get the integer prediction from the scikit-learn pipeline (run in thread)
+    prediction_encoded = await asyncio.to_thread(CLASSIFIER.predict, embedding_array)
     
-    # 3. Get the prediction probabilities to use as a confidence score
-    probabilities = CLASSIFIER.predict_proba(embedding_array)
+    # 3. Get the prediction probabilities to use as a confidence score (run in thread)
+    probabilities = await asyncio.to_thread(CLASSIFIER.predict_proba, embedding_array)
     confidence = float(np.max(probabilities))
 
-    # 4. Decode the integer prediction back to a human-readable string label
-    predicted_label = LABEL_ENCODER.inverse_transform(prediction_encoded)[0]
+    # 4. Decode the integer prediction back to a human-readable string label (run in thread for safety)
+    predicted_label = await asyncio.to_thread(LABEL_ENCODER.inverse_transform, prediction_encoded)
 
-    return predicted_label, confidence
+    return predicted_label[0], confidence

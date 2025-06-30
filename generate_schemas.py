@@ -16,11 +16,8 @@ load_dotenv()
 # Get the directory where this script is located
 SCRIPT_DIR = Path(__file__).resolve().parent 
 
-# --- THE FIX IS HERE: Point to the JSONL files directly ---
 TRAIN_EXAMPLES_JSONL = SCRIPT_DIR / "dataset" / "train_examples.jsonl"
-ALL_EXAMPLES_JSONL = SCRIPT_DIR / "dataset" / "examples.jsonl" # This should have the text
-# --- END OF FIX ---
-
+ALL_EXAMPLES_JSONL = SCRIPT_DIR / "dataset" / "examples.jsonl" # Contains the full text for schema generation examples
 OUTPUT_SCHEMAS_FILE = SCRIPT_DIR / "app" / "schemas.json"
 NUM_EXAMPLES_PER_TYPE = 3
 SCHEMA_GEN_MODEL = "gpt-4o"
@@ -113,10 +110,8 @@ Your JSON response:
 # --- Main Execution ---
 if __name__ == "__main__":
     try:
-        # --- THE FIX IS HERE ---
-        # Get document types from the JSONL file, not from directory names
+        # Get document types from the training JSONL file
         document_types = get_document_types(TRAIN_EXAMPLES_JSONL)
-        # --- END OF FIX ---
     except FileNotFoundError as e:
         print(f"Error: {e}")
         exit(1)

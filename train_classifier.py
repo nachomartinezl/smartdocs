@@ -12,7 +12,7 @@ import time
 
 import numpy as np
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler, LabelEncoder # <-- Import LabelEncoder
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
@@ -77,19 +77,17 @@ if __name__ == "__main__":
     print(f"\nPrepared {len(X_train)} training samples and {len(X_test)} test samples.")
     print("-" * 30)
 
-    # --- THE KEY FIX: LABEL ENCODING ---
-    # Create and fit the label encoder on the training data's string labels
+    # Encode string labels to integers for model training
     print("🏷️  Encoding string labels to integers...")
     label_encoder = LabelEncoder()
     y_train_encoded = label_encoder.fit_transform(y_train_str)
     y_test_encoded = label_encoder.transform(y_test_str)
     
-    # Save the encoder so we can decode predictions later if needed
+    # Save the encoder for later use (e.g., decoding predictions)
     encoder_path = MODELS_DIR / "label_encoder.joblib"
     joblib.dump(label_encoder, encoder_path)
     print(f"💾 Label encoder saved to {encoder_path}")
     print(f"Classes: {label_encoder.classes_}")
-    # --- END OF FIX ---
 
     # Define models to compare
     models = {
@@ -103,7 +101,7 @@ if __name__ == "__main__":
         ),
         "Support Vector Machine (SVC)": make_pipeline(
             StandardScaler(),
-            SVC(random_state=42, probability=True) # <-- ADD THIS PARAMETER
+            SVC(random_state=42, probability=True) # probability=True is needed for some calibration/thresholding options
         ),
         "XGBoost": make_pipeline(
             StandardScaler(),
