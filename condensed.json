@@ -1,0 +1,404 @@
+{
+  "input_path": null,
+  "page_index": null,
+  "model_settings": {
+    "use_doc_preprocessor": false,
+    "use_seal_recognition": true,
+    "use_table_recognition": true,
+    "use_formula_recognition": true,
+    "use_chart_recognition": false,
+    "use_region_detection": true
+  },
+  "parsing_res_list": [
+    {
+      "block_label": "paragraph_title",
+      "block_content": "BIOGRAPHICAL SKETCH ",
+      "block_bbox": [
+        306,
+        99,
+        451,
+        114
+      ]
+    },
+    {
+      "block_label": "text",
+      "block_content": "J. DONAID CAPRA,M.D.",
+      "block_bbox": [
+        298,
+        144,
+        454,
+        159
+      ]
+    },
+    {
+      "block_label": "text",
+      "block_content": "BORN July 20,1937, Burlington, Vermont, U.S.A.",
+      "block_bbox": [
+        101,
+        185,
+        447,
+        206
+      ]
+    },
+    {
+      "block_label": "text",
+      "block_content": "B.S.1959University of Vermont Chemistry M.D.1963University ofVermont Medicine ",
+      "block_bbox": [
+        101,
+        249,
+        536,
+        295
+      ]
+    },
+    {
+      "block_label": "text",
+      "block_content": "Medical Graduate Sumna Cum Laude AOA,PHS Special Fellow ",
+      "block_bbox": [
+        100,
+        370,
+        339,
+        400
+      ]
+    },
+    {
+      "__truncated__": true
+    }
+  ],
+  "layout_det_res": {
+    "input_path": null,
+    "page_index": null,
+    "boxes": [
+      {
+        "cls_id": 2,
+        "label": "text",
+        "score": 0.5442501306533813,
+        "coordinate": [
+          101.9417724609375,
+          504.8294677734375,
+          623.7763671875,
+          551.49560546875
+        ]
+      },
+      {
+        "cls_id": 2,
+        "label": "text",
+        "score": 0.5370478630065918,
+        "coordinate": [
+          102.50234985351562,
+          565.5276489257812,
+          638.6346435546875,
+          611.5338745117188
+        ]
+      },
+      {
+        "cls_id": 2,
+        "label": "text",
+        "score": 0.5223591327667236,
+        "coordinate": [
+          102.23141479492188,
+          625.60595703125,
+          637.32958984375,
+          670.840087890625
+        ]
+      },
+      {
+        "cls_id": 2,
+        "label": "text",
+        "score": 0.5112088918685913,
+        "coordinate": [
+          101.26953125,
+          685.9789428710938,
+          608.5581665039062,
+          730.9526977539062
+        ]
+      },
+      {
+        "cls_id": 2,
+        "label": "text",
+        "score": 0.5024095773696899,
+        "coordinate": [
+          100.58364868164062,
+          746.1839599609375,
+          623.1380615234375,
+          791.3421630859375
+        ]
+      },
+      {
+        "__truncated__": true
+      }
+    ]
+  },
+  "overall_ocr_res": {
+    "input_path": null,
+    "page_index": null,
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": true
+    },
+    "dt_polys": [
+      [
+        [
+          367,
+          14
+        ],
+        [
+          381,
+          14
+        ],
+        [
+          381,
+          31
+        ],
+        [
+          367,
+          31
+        ]
+      ],
+      [
+        [
+          490,
+          14
+        ],
+        [
+          554,
+          14
+        ],
+        [
+          554,
+          31
+        ],
+        [
+          490,
+          31
+        ]
+      ],
+      [
+        [
+          308,
+          98
+        ],
+        [
+          451,
+          98
+        ],
+        [
+          451,
+          115
+        ],
+        [
+          308,
+          115
+        ]
+      ],
+      [
+        [
+          299,
+          143
+        ],
+        [
+          455,
+          143
+        ],
+        [
+          455,
+          160
+        ],
+        [
+          299,
+          160
+        ]
+      ],
+      [
+        [
+          102,
+          185
+        ],
+        [
+          448,
+          188
+        ],
+        [
+          448,
+          208
+        ],
+        [
+          102,
+          206
+        ]
+      ],
+      {
+        "__truncated__": true
+      }
+    ],
+    "text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.6,
+      "unclip_ratio": 1.5
+    },
+    "text_type": "general",
+    "textline_orientation_angles": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      {
+        "__truncated__": true
+      }
+    ],
+    "text_rec_score_thresh": 0.0,
+    "rec_texts": [
+      "i",
+      "APPENDIX",
+      "BIOGRAPHICAL SKETCH",
+      "J. DONAID CAPRA,M.D.",
+      "BORN July 20,1937, Burlington, Vermont, U.S.A.",
+      {
+        "__truncated__": true
+      }
+    ],
+    "rec_scores": [
+      0.9965893030166626,
+      0.9960527420043945,
+      0.9487655162811279,
+      0.9498937726020813,
+      0.8980411887168884,
+      {
+        "__truncated__": true
+      }
+    ],
+    "rec_polys": [
+      [
+        [
+          367,
+          14
+        ],
+        [
+          381,
+          14
+        ],
+        [
+          381,
+          31
+        ],
+        [
+          367,
+          31
+        ]
+      ],
+      [
+        [
+          490,
+          14
+        ],
+        [
+          554,
+          14
+        ],
+        [
+          554,
+          31
+        ],
+        [
+          490,
+          31
+        ]
+      ],
+      [
+        [
+          308,
+          98
+        ],
+        [
+          451,
+          98
+        ],
+        [
+          451,
+          115
+        ],
+        [
+          308,
+          115
+        ]
+      ],
+      [
+        [
+          299,
+          143
+        ],
+        [
+          455,
+          143
+        ],
+        [
+          455,
+          160
+        ],
+        [
+          299,
+          160
+        ]
+      ],
+      [
+        [
+          102,
+          185
+        ],
+        [
+          448,
+          188
+        ],
+        [
+          448,
+          208
+        ],
+        [
+          102,
+          206
+        ]
+      ],
+      {
+        "__truncated__": true
+      }
+    ],
+    "rec_boxes": [
+      [
+        367,
+        14,
+        381,
+        31
+      ],
+      [
+        490,
+        14,
+        554,
+        31
+      ],
+      [
+        308,
+        98,
+        451,
+        115
+      ],
+      [
+        299,
+        143,
+        455,
+        160
+      ],
+      [
+        102,
+        185,
+        448,
+        208
+      ],
+      {
+        "__truncated__": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+.env
+.ocr_cache
+__pycache__
+dataset/
+chroma_db
+raw_docs
+output
+smartdocs
