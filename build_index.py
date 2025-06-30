@@ -1,6 +1,5 @@
 import json, io, asyncio, hashlib, pathlib, os
 from asyncio import Semaphore, gather
-
 from fastapi import UploadFile
 from starlette.datastructures import Headers
 from app.services.document_ingestor import ingest
@@ -22,53 +21,66 @@ def cache_path(fp: pathlib.Path) -> pathlib.Path:
 
 async def extract_text(fp: pathlib.Path) -> str:
     """Run ingest() once per file, with a disk cache."""
+    print(f"[INFO] Processing file: {fp}")
     cfile = cache_path(fp)
     if cfile.exists():
-        # --- CORRECTED LINE ---
-        # Specify UTF-8 when reading the cache to handle all Unicode characters.
+        print(f"[CACHE] Hit for: {fp.name}")
         return cfile.read_text(encoding="utf-8")
 
-    up = UploadFile(
-        file=io.BytesIO(fp.read_bytes()),
-        filename=fp.name,
-        headers=Headers({'content-type': mime_from_path(fp)})
-    )
+    try:
+        up = UploadFile(
+            file=io.BytesIO(fp.read_bytes()),
+            filename=fp.name,
+            headers=Headers({'content-type': mime_from_path(fp)})
+        )
 
-    blocks = await ingest(up)                       # OCR / PDF parse here
-    text   = "\n".join(b["text"] for b in blocks)
-    
-    # --- CORRECTED LINE ---
-    # Specify UTF-8 when writing to the cache to prevent UnicodeEncodeError.
-    cfile.write_text(text, encoding="utf-8")
-    
-    return text
+        blocks = await ingest(up)
+        if not blocks:
+            print(f"[WARN] No OCR blocks for: {fp}")
+            return ""
+
+        text = "\n".join(b["text"] for b in blocks if "text" in b and b["text"].strip())
+        cfile.write_text(text, encoding="utf-8")
+        print(f"[OK] OCR success for: {fp.name} — {len(text)} chars")
+        return text
+
+    except Exception as e:
+        print(f"[ERROR] Exception during OCR for: {fp}\n{e}")
+        return ""
 
 # ---------- main routine ----------------------------------------------------
 
-CONCURRENCY = int(os.getenv("OCR_CONCURRENCY", "4"))  # raise if GPU has headroom
+CONCURRENCY = int(os.getenv("OCR_CONCURRENCY", "32"))
 SEM = Semaphore(CONCURRENCY)
 
 async def to_example(rec: dict) -> dict | None:
     """Return embedding-ready record or None (if not in train)."""
-    if "/train/" not in rec["file_path"].replace("\\", "/"):
+    path = rec.get("file_path", "")
+    if "/train/" not in path.replace("\\", "/"):
+        print(f"[SKIP] Not a training file: {path}")
         return None
+
     async with SEM:
-        fp   = pathlib.Path(rec["file_path"])
+        fp = pathlib.Path(path)
         text = await extract_text(fp)
-        return {"id": rec["id"], "text": text, "label": rec["label"]}
+        if not text.strip():
+            print(f"[SKIP] Empty OCR result: {fp.name}")
+            return None
+
+        print(f"[DONE] Ready to index: {fp.name}")
+        return {"id": rec["id"], "text": text}
 
 async def main():
-    # read jsonl
-    tasks = []
-    # This line already correctly uses UTF-8, which is great.
-    for line in EXAMPLES_JSONL.read_text(encoding="utf-8").splitlines():
-        tasks.append(to_example(json.loads(line)))
+    print(f"📄 Reading: {EXAMPLES_JSONL}")
+    lines = EXAMPLES_JSONL.read_text(encoding="utf-8").splitlines()
+    print(f"🔎 Found {len(lines)} files to process...")
 
+    tasks = [to_example(json.loads(line)) for line in lines]
     examples = [ex for ex in await gather(*tasks) if ex]
 
-    await index_examples(examples)            # store in Chroma
-    print(f"✓ Indexed {len(examples)} training examples "
-          f"(concurrency={CONCURRENCY})")
+    print(f"💾 Indexing {len(examples)} valid training examples...")
+    await index_examples(examples)
+    print(f"✅ Done. Indexed {len(examples)} examples (concurrency={CONCURRENCY})")
 
 if __name__ == "__main__":
     asyncio.run(main())
