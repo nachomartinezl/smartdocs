@@ -15,60 +15,68 @@ from paddleocr import PPStructureV3, PaddleOCR
 from fastapi import HTTPException
 from typing import List, Dict, Any
 
-# --- PPStructureV3 Model Initialization ---
-ocr = PPStructureV3(
-    text_recognition_model_name='en_PP-OCRv4_mobile_rec',
-    use_doc_orientation_classify=False,
-    use_doc_unwarping=False, 
-    use_textline_orientation=False, 
+# --- PaddleOCR Model Initialization ---
+ocr = PaddleOCR(
+    lang="en",
+    use_doc_orientation_classify=False, # Disable document orientation classification
+    use_doc_unwarping=False, # Disable text image unwarping
+    use_textline_orientation=False, # Disable textline orientation classification
 )
 # -------- public API --------
 def ocr_image(img_bytes: bytes) -> List[Dict[str, Any]]:
+    """
+    Performs OCR and returns a structured list of text blocks by saving the
+    result to a JSON file and then correctly parsing the top-level keys.
+    """
     try:
-        img = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+        img_arr = np.frombuffer(img_bytes, np.uint8)
+        img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+
         if img is None:
-            raise ValueError("Invalid image data")
+            raise ValueError("Invalid image data, could not be decoded.")
 
-        result = ocr.predict(img)          # one page → len == 1
-        if not result:
-            logging.warning("OCR produced no result")
+        result = ocr.predict(input=img)
+
+        if not result or not result[0]:
+            logging.warning("OCR returned no result.")
             return []
 
-        # ---- JSON round-trip exactly like before ----
-        with tempfile.TemporaryDirectory() as tmp:
-            json_path = Path(tmp) / "page.json"
-            result[0].save_to_json(str(json_path))
-            with open(json_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+        # Re-implementing the save/load JSON method as you instructed.
+        data_dict = {}
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_json_path = Path(temp_dir) / "result.json"
+            result[0].save_to_json(save_path=str(temp_json_path))
+            with open(temp_json_path, 'r', encoding='utf-8') as f:
+                data_dict = json.load(f)
 
-        blocks = data.get("parsing_res_list", [])
-        if not blocks:
-            logging.warning("No parsing_res_list found")
+        # --- THIS IS THE CORRECTED LOGIC ---
+
+        # 1. Extract the recognized texts, polygons, and scores directly from the top level
+        #    of the loaded dictionary, as shown in your latest error log.
+        texts = data_dict.get('rec_texts')
+        polys = data_dict.get('rec_polys')
+        scores = data_dict.get('rec_scores')
+
+        if not texts or not polys or not scores or len(texts) != len(polys):
+            logging.warning(f"OCR data is inconsistent or empty in loaded JSON. Found keys: {data_dict.keys()}")
             return []
 
-        extracted = []
-        for blk in blocks:
-            text  = (blk.get("block_content") or "").strip()
-            bbox  = blk.get("block_bbox")    # [x1, y1, x2, y2]
-            label = blk.get("block_label", "text")
-            if not text or not bbox:
-                continue
+        # 2. Combine the data and sort by vertical position (top-left y-coordinate).
+        combined_data = sorted(zip(polys, texts, scores), key=lambda item: item[0][0][1])
 
-            x1, y1, x2, y2 = bbox
-            poly = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
+        # 3. Build the structured output that the router expects.
+        structured_output = [
+            {
+                "type": "text",
+                "text": text.strip(),
+                "bbox": poly,
+                "confidence": float(score)
+            }
+            for poly, text, score in combined_data
+        ]
 
-            extracted.append(
-                {
-                    "type": label,
-                    "text": text,
-                    "bbox": poly,
-                }
-            )
-
-        # sort blocks top-to-bottom
-        extracted.sort(key=lambda b: b["bbox"][0][1])
-        return extracted
+        return structured_output
 
     except Exception as exc:
-        logging.exception("Image OCR failed")
-        raise HTTPException(status_code=500, detail=f"OCR failed: {exc}") from exc
+        logging.exception("Image OCR process failed")
+        raise HTTPException(status_code=500, detail=f"Image OCR failed: {exc}") from exc
