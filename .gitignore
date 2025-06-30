@@ -6,3 +6,5 @@ chroma_db
 raw_docs
 output
 smartdocs
+models
+.pytest_cache

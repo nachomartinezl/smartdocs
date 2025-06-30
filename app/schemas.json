@@ -1,0 +1,246 @@
+{
+  "advertisement": {
+    "description": "Schema for advertisement documents.",
+    "fields": {
+      "advertisement_title": "The main title or headline of the advertisement.",
+      "advertisement_body": "The main content or body text of the advertisement.",
+      "contact_information": "Contact details provided in the advertisement, such as phone numbers or addresses.",
+      "advertisement_id": "A unique identifier for the advertisement, if available.",
+      "product_or_service": "The product or service being advertised.",
+      "promotion_details": "Details about any promotions or special offers mentioned in the advertisement.",
+      "validity_period": "The time period during which the advertisement or offer is valid.",
+      "advertiser_name": "The name of the company or individual placing the advertisement."
+    }
+  },
+  "budget": {
+    "description": "Schema for budget documents.",
+    "fields": {
+      "document_type": "The type of document, which in this case is 'budget'.",
+      "check_number": "The unique identifier for the check associated with the budget document.",
+      "check_date": "The date when the check was issued.",
+      "amount": "The monetary value associated with the check or budget item.",
+      "payee": "The entity or individual to whom the check is made payable.",
+      "vendor_number": "A unique identifier for the vendor involved in the transaction.",
+      "document_date": "The date when the document was created or issued.",
+      "document_number": "A unique identifier for the document.",
+      "project_description": "A brief description of the project or purpose of the budget.",
+      "estimated_spending_schedule": "The planned schedule for spending the budget over time.",
+      "capital": "The amount allocated for capital expenses in the budget.",
+      "expense": "The amount allocated for operational or other expenses in the budget.",
+      "start_date": "The start date for the budget or project.",
+      "end_date": "The end date for the budget or project."
+    }
+  },
+  "email": {
+    "description": "Schema for email documents.",
+    "fields": {
+      "message_id": "A unique identifier for the email message.",
+      "from": "The email address of the sender.",
+      "to": "The email addresses of the primary recipients.",
+      "cc": "The email addresses of the carbon copy recipients.",
+      "subject": "The subject line of the email.",
+      "date": "The date and time when the email was sent.",
+      "body": "The main content or body of the email message."
+    }
+  },
+  "file_folder": {
+    "description": "Schema for file_folder documents.",
+    "fields": {
+      "document_title": "The title or heading of the document, often indicating the main subject or purpose.",
+      "document_id": "A unique identifier or number associated with the document, typically numeric."
+    }
+  },
+  "form": {
+    "description": "Schema for form documents.",
+    "fields": {
+      "document_type": "The type of document, which in this case is 'form'.",
+      "date": "The date when the form was filled out or processed.",
+      "sender_name": "The name of the person or organization sending the form.",
+      "sender_address": "The address of the sender, if available.",
+      "sender_telephone": "The telephone number of the sender.",
+      "recipient_name": "The name of the person or organization receiving the form.",
+      "recipient_address": "The address of the recipient, if available.",
+      "recipient_telephone": "The telephone number of the recipient.",
+      "subject": "The subject or purpose of the form, if specified.",
+      "pages_including_cover": "The total number of pages in the form, including the cover page.",
+      "special_instructions": "Any special instructions provided in the form.",
+      "client_matter_name": "The name of the client or matter related to the form.",
+      "client_matter_number": "The number associated with the client or matter.",
+      "type_of_service": "The type of service requested, such as courier or postal service.",
+      "service_number": "The specific service number or code for the requested service.",
+      "weight": "The weight of the package or item being sent, if applicable.",
+      "value": "The declared value of the package or item being sent, if applicable."
+    }
+  },
+  "handwritten": {
+    "description": "Schema for handwritten documents.",
+    "fields": {
+      "sender_name": "The name of the person who wrote the document.",
+      "recipient": "The person or entity to whom the document is addressed.",
+      "date": "The date when the document was written.",
+      "address": "The address mentioned in the document, typically of the sender or recipient.",
+      "message_body": "The main content or message of the document.",
+      "contact_number": "A phone number or contact number mentioned in the document.",
+      "postscript": "Any additional notes or comments added at the end of the document, often introduced by 'P.S.'"
+    }
+  },
+  "invoice": {
+    "description": "Schema for invoice documents.",
+    "fields": {
+      "invoice_number": "A unique identifier assigned to the invoice.",
+      "invoice_date": "The date when the invoice was issued.",
+      "total_amount_due": "The total amount of money that is due for payment as per the invoice.",
+      "currency": "The currency in which the invoice amount is denominated.",
+      "sold_to": "The name and address of the entity or person to whom the goods or services are sold.",
+      "ship_to": "The name and address of the entity or person to whom the goods are shipped.",
+      "payment_terms": "The terms under which the payment is expected to be made.",
+      "customer_po_number": "The purchase order number provided by the customer.",
+      "description": "A brief description of the goods or services provided.",
+      "unit_price": "The price per unit of the goods or services listed in the invoice.",
+      "quantity": "The quantity of goods or services listed in the invoice."
+    }
+  },
+  "letter": {
+    "description": "Schema for letter documents.",
+    "fields": {
+      "subject": "The subject or main topic of the letter.",
+      "date": "The date on which the letter was written or sent.",
+      "to": "The recipient(s) of the letter.",
+      "from": "The sender or author of the letter.",
+      "cc": "Additional recipients who received a copy of the letter.",
+      "body": "The main content or message of the letter.",
+      "reference_number": "A unique identifier or reference number associated with the letter, if available."
+    }
+  },
+  "memo": {
+    "description": "Schema for memo documents.",
+    "fields": {
+      "to": "The recipient(s) of the memo.",
+      "from": "The sender of the memo.",
+      "date": "The date when the memo was written.",
+      "subject": "The subject or main topic of the memo.",
+      "cc": "Additional recipients who are copied on the memo.",
+      "body": "The main content or body of the memo, detailing the information or discussion points.",
+      "present": "List of individuals present at a meeting or discussion mentioned in the memo.",
+      "study_details": "Details of any studies or experiments mentioned in the memo.",
+      "record_categories": "Categories of records mentioned for disposal or review in the memo.",
+      "approval_signatures": "Signatures of individuals who have approved actions or decisions in the memo."
+    }
+  },
+  "news_article": {
+    "description": "Schema for news_article documents.",
+    "fields": {
+      "headline": "The title or main headline of the news article.",
+      "author": "The name of the person who wrote the article.",
+      "publication_date": "The date when the article was published.",
+      "location": "The location or dateline where the news event occurred or was reported from.",
+      "body_text": "The main content or body of the news article.",
+      "source": "The publication or source where the article was published.",
+      "article_id": "A unique identifier for the article, if available."
+    }
+  },
+  "presentation": {
+    "description": "Schema for presentation documents.",
+    "fields": {
+      "document_type": "The type of document, which is 'presentation'.",
+      "contact_name": "The name of the contact person mentioned in the document.",
+      "contact_phone": "The phone number of the contact person or organization.",
+      "contact_address": "The address of the contact person or organization.",
+      "release_date": "The date when the information in the document was released.",
+      "company_name": "The name of the company or organization associated with the document.",
+      "case_information": "Details about any legal cases mentioned in the document.",
+      "product_list": "A list of products or brands mentioned in the document."
+    }
+  },
+  "questionnaire": {
+    "description": "Schema for questionnaire documents.",
+    "fields": {
+      "document_title": "The title or heading of the questionnaire document.",
+      "organization_name": "The name of the organization conducting the questionnaire.",
+      "address": "The address of the organization or location where the questionnaire is conducted.",
+      "date": "The date when the questionnaire was conducted or created.",
+      "respondent_name": "The name of the person responding to the questionnaire.",
+      "interviewer_name": "The name of the person conducting the interview or questionnaire.",
+      "city": "The city where the questionnaire is conducted or where the respondent is located.",
+      "state": "The state where the questionnaire is conducted or where the respondent is located.",
+      "time_started": "The time when the questionnaire or interview started.",
+      "time_ended": "The time when the questionnaire or interview ended.",
+      "questionnaire_type": "The type or category of the questionnaire, such as 'screening' or 'qualitative'.",
+      "questions": "A list of questions included in the questionnaire.",
+      "brands_mentioned": "A list of brands or products mentioned in the questionnaire.",
+      "commercials_discussed": "A list of commercials discussed during the questionnaire.",
+      "age_group": "The age group or range of the respondent, often indicated by a letter or category."
+    }
+  },
+  "resume": {
+    "description": "Schema for resume documents.",
+    "fields": {
+      "candidate_name": "The full name of the individual whose resume is being described.",
+      "birthdate": "The birthdate of the candidate.",
+      "place_of_birth": "The place where the candidate was born.",
+      "education": "A list of educational qualifications, including degrees, institutions, and years of graduation.",
+      "professional_experience": "A list of professional roles held by the candidate, including positions, organizations, and years of service.",
+      "research_interests": "The candidate's major research interests or areas of expertise.",
+      "honors": "Any honors or awards received by the candidate.",
+      "publications": "A list of selected publications authored or co-authored by the candidate.",
+      "professional_affiliations": "Professional organizations or societies to which the candidate belongs.",
+      "certifications": "Professional certifications or licenses held by the candidate."
+    }
+  },
+  "scientific_publication": {
+    "description": "Schema for scientific_publication documents.",
+    "fields": {
+      "title": "The title of the scientific publication.",
+      "authors": "A list of authors who contributed to the publication.",
+      "abstract": "A brief summary of the research, findings, and conclusions of the publication.",
+      "journal_name": "The name of the journal where the publication is published.",
+      "volume": "The volume number of the journal in which the publication appears.",
+      "issue": "The issue number of the journal in which the publication appears.",
+      "pages": "The page range in the journal where the publication is found.",
+      "publication_date": "The date when the publication was published.",
+      "keywords": "A list of keywords associated with the publication.",
+      "doi": "The Digital Object Identifier (DOI) of the publication, if available."
+    }
+  },
+  "scientific_report": {
+    "description": "Schema for scientific_report documents.",
+    "fields": {
+      "document_title": "The title of the scientific report.",
+      "study_number": "A unique identifier for the study, often labeled as 'Study No.' or similar.",
+      "report_number": "A unique identifier for the report, often labeled as 'Report No.' or similar.",
+      "date": "The date when the report was published or finalized.",
+      "author": "The name of the primary author or researcher responsible for the report.",
+      "contractor": "The organization or individual contracted to perform the study.",
+      "sponsor": "The organization or individual sponsoring the study.",
+      "location": "The geographical location or address associated with the contractor or sponsor.",
+      "subject": "The main subject or focus of the study, such as the compound or treatment being tested.",
+      "species": "The species of animals or subjects used in the study, if applicable."
+    }
+  },
+  "specification": {
+    "description": "Schema for specification documents.",
+    "fields": {
+      "document_date": "The date when the document was created or last updated.",
+      "document_title": "The title or heading of the document.",
+      "brand_name": "The name of the brand associated with the specification.",
+      "item_id_revision": "The unique identifier and revision number for the item being specified.",
+      "phase_reason": "The reason for the current phase or version of the specification.",
+      "distribution_list": "A list of individuals or roles to whom the document is distributed.",
+      "effective_date": "The date when the specification becomes effective.",
+      "location": "The geographical location or facility related to the specification.",
+      "product_type": "The type or category of the product being specified.",
+      "cigarette_length_mm": "The length of the cigarette in millimeters.",
+      "tobacco_rod_circumference_mm": "The circumference of the tobacco rod in millimeters.",
+      "tobacco_rod_length_mm": "The length of the tobacco rod in millimeters.",
+      "filter_length_mm": "The length of the filter in millimeters.",
+      "tipping_length_mm": "The length of the tipping paper in millimeters.",
+      "air_tightness_in_h2o": "The air tightness measurement in inches of water.",
+      "tipping_paper_details": "Details about the tipping paper used in the product.",
+      "adhesive_type": "The type of adhesive used in the product.",
+      "certification_profile": "The profile of certifications related to the product.",
+      "maximum_concentration": "The maximum concentration of specified substances in the product.",
+      "substance_name": "The name of a substance for which concentration is measured.",
+      "substance_concentration": "The concentration of a specific substance in the product."
+    }
+  }
+}
