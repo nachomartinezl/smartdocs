@@ -321,12 +321,4 @@ Specific tests might require certain setup, like available test assets or a runn
 *   User authentication and authorization for the API.
 *   More comprehensive test coverage.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues. (Further details can be added here if specific contribution guidelines are established).
-
-## License
-
-(Specify your license here, e.g., MIT, Apache 2.0, or leave as "To be determined" if not yet decided.)
-
 ```
