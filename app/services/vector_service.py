@@ -77,10 +77,12 @@ async def index_examples(examples: list[dict]):
     # CHANGE 3: Unzip into three lists: ids, embeddings, and metadatas.
     ids, embeddings, metadatas = zip(*results)
     
-    collection.add(
+    # Run synchronous chromadb operation in a thread
+    await asyncio.to_thread(
+        collection.add,
         ids=list(ids),
         embeddings=list(embeddings),
-        metadatas=list(metadatas)  # <-- THE CRITICAL ADDITION
+        metadatas=list(metadatas)
     )
 
     print(f"\n🎉 Done. Indexed {len(ids)} valid examples.")
@@ -89,8 +91,13 @@ async def classify(text: str, k: int = 3) -> tuple[str, float]:
     """
     Returns (predicted_label, confidence 0-1)
     """
-    vec   = await embed(text)
-    res   = collection.query(query_embeddings=[vec], n_results=k)
+    vec = await embed(text)
+    # Run synchronous chromadb operation in a thread
+    res = await asyncio.to_thread(
+        collection.query,
+        query_embeddings=[vec],
+        n_results=k
+    )
     hits  = res['metadatas'][0]           # list[{'label':...}, ...]
     sims  = res['distances'][0]           # cosine distances (0=identical)
 
